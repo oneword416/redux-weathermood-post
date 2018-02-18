@@ -33,9 +33,6 @@ class WeatherForm extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.inputEl = null;
-
         this.handleFormToggle = this.handleFormToggle.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleMetricUnit = this.handleMetricUnit.bind(this);
@@ -61,7 +58,7 @@ class WeatherForm extends React.Component {
         return (
             <div className={`weather-form ${formCls}`}>{formToggle ?
                 <Form className='form-inline justify-content-center' onSubmit={this.handleSubmit}>
-                    <Input type='text' name='city' getRef={el => {this.inputEl = el}} value={inputValue} onChange={this.handleInputChange}></Input>&nbsp;
+                    <Input type='text' name='city' value={inputValue} onChange={this.handleInputChange}></Input>&nbsp;
                     <ButtonDropdown type='buttom' isOpen={tempToggle} toggle={this.handleTempToggle}>
                         <DropdownToggle type='button' caret color="secondary">
                             &ordm; {WeatherForm.getUnitString(unit)}
@@ -98,7 +95,6 @@ class WeatherForm extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
 
-        this.inputEl.blur();
         const {inputValue, city, unit, dispatch} = this.props;
         if (inputValue && inputValue.trim()) {
             dispatch(this.props.submitAction(inputValue, unit));

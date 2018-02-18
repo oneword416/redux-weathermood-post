@@ -28,7 +28,6 @@ export default class PostForm extends React.Component {
             moodToggle: false,
             mood: 'na'
         };
-        this.inputEl = null;
         this.moodToggleEl = null;
 
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -63,7 +62,7 @@ export default class PostForm extends React.Component {
                             </DropdownMenu>
                         </ButtonDropdown>
                     </div>
-                    <Input className='input' type='textarea' getRef={el => {this.inputEl = el}} value={this.state.inputValue} onChange={this.handleInputChange} placeholder="What's on your mind?"></Input>
+                    <Input className='input' type='textarea' value={this.state.inputValue} onChange={this.handleInputChange} placeholder="What's on your mind?"></Input>
                     <Button className='btn-post align-self-end' color="info" onClick={this.handlePost}>Post</Button>
                 </Alert>
             </div>

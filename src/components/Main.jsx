@@ -59,8 +59,8 @@ export default class Main extends React.Component {
                     <div className='main'>
                         <div className='bg-faded'>
                             <div className='container'>
-                                <Navbar color='faded' light toggleable>
-                                    <NavbarToggler right onClick={this.handleNavbarToggle}/>
+                                <Navbar color='faded' light>
+                                    <NavbarToggler onClick={this.handleNavbarToggle}/>
                                     <NavbarBrand className='text-info' href="/">WeatherMood</NavbarBrand>
                                     <Collapse isOpen={this.state.navbarToggle} navbar>
                                         <Nav navbar>
@@ -72,7 +72,7 @@ export default class Main extends React.Component {
                                             </NavItem>
                                         </Nav>
                                         <div className='search ml-auto'>
-                                            <Input className='ml-auto' type='text' getRef={this.searchEl} placeholder='Search' onKeyPress={this.handleSearchKeyPress} getRef={e => this.searchEl = e}></Input>{
+                                            <Input className='ml-auto' type='text' ref={this.searchEl} placeholder='Search' onKeyPress={this.handleSearchKeyPress} ref={e => this.searchEl = e}></Input>{
                                                 this.state.searchText &&
                                                 <i className='navbar-text fa fa-times' onClick={this.handleClearSearch}></i>
                                             }
