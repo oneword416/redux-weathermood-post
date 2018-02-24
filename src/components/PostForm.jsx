@@ -9,26 +9,27 @@ import {
     DropdownMenu,
     DropdownItem
 } from 'reactstrap';
+import {connect} from 'react-redux';
+
+import {input, setToggleInputDanger, toggleMood, setToggleMood, setMood} from 'states/post-actions.js';
 
 import {getMoodIcon} from 'utilities/weather.js';
 
 import './PostForm.css';
 
-export default class PostForm extends React.Component {
+class PostForm extends React.Component {
     static propTypes = {
-        onPost: PropTypes.func
+        inputValue: PropTypes.string,
+        inputDanger: PropTypes.bool,
+        moodToggle: PropTypes.bool,
+        mood: PropTypes.string,
+        submitAction: PropTypes.func,
+        postCreating: PropTypes.bool,
+        dispatch: PropTypes.func,
     };
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            inputValue: props.city,
-            inputDanger: false,
-            moodToggle: false,
-            mood: 'na'
-        };
-        this.moodToggleEl = null;
 
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleDropdownSelect = this.handleDropdownSelect.bind(this);
@@ -38,8 +39,8 @@ export default class PostForm extends React.Component {
     }
 
     render() {
-        const {inputValue, moodToggle, mood} = this.state;
-        const inputDanger = this.state.inputDanger ? 'has-danger' : '';
+        const {inputValue, moodToggle, mood} = this.props;
+        const inputDanger = this.props.inputDanger ? 'has-danger' : '';
 
         return (
             <div className='post-form'>
@@ -62,7 +63,7 @@ export default class PostForm extends React.Component {
                             </DropdownMenu>
                         </ButtonDropdown>
                     </div>
-                    <Input className='input' type='textarea' value={this.state.inputValue} onChange={this.handleInputChange} placeholder="What's on your mind?"></Input>
+                    <Input className='input' type='textarea' value={inputValue} onChange={this.handleInputChange} placeholder="What's on your mind?"></Input>
                     <Button className='btn-post align-self-end' color="info" onClick={this.handlePost}>Post</Button>
                 </Alert>
             </div>
@@ -70,37 +71,40 @@ export default class PostForm extends React.Component {
     }
 
     handleDropdownSelect(mood) {
-        this.setState({mood: mood});
+        this.props.dispatch(setMood(mood));
     }
 
     handleInputChange(e) {
         const text = e.target.value
-        this.setState({inputValue: text});
+        this.props.dispatch(input(text));
         if (text) {
-            this.setState({inputDanger: false});
+            this.props.dispatch(setToggleInputDanger(false));
         }
     }
 
     handleMoodToggle(e) {
-        this.setState((prevState, props) => ({
-            moodToggle: !prevState.moodToggle
-        }));
+        this.props.dispatch(toggleMood());
     }
 
-    handlePost() {
-        if (this.state.mood === 'na') {
-            this.setState({moodToggle: true});
+    handlePost(e) {
+        e.preventDefault();
+
+        const {inputValue, mood, dispatch} = this.props;
+        if (mood === 'na') {
+            dispatch(setToggleMood(true));
             return;
         }
-        if (!this.state.inputValue) {
-            this.setState({inputDanger: true});
+        if (!inputValue) {
+            dispatch(setToggleInputDanger(true));
             return;
         }
 
-        this.props.onPost(this.state.mood, this.state.inputValue);
-        this.setState({
-            inputValue: '',
-            mood: 'na'
-        });
+        dispatch(this.props.submitAction(mood, inputValue));
+        dispatch(input(''));
+        dispatch(setMood('na'));
     }
 }
+
+export default connect((state) => {
+    return state.postForm;
+})(PostForm);

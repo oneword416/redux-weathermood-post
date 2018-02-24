@@ -4,17 +4,19 @@ import {
     ListGroup,
     ListGroupItem
 } from 'reactstrap';
+import {connect} from 'react-redux';
 
 import PostItem from 'components/PostItem.jsx';
 import {createVote} from 'api/posts.js';
 
 import './PostList.css';
 
-export default class PostList extends React.Component {
+class PostList extends React.Component {
     static propTypes = {
         posts: PropTypes.array,
         filter: PropTypes.string,
-        onVote: PropTypes.func
+        submitAction: PropTypes.func,
+        dispatch: PropTypes.func,
     };
 
     constructor(props) {
@@ -50,6 +52,8 @@ export default class PostList extends React.Component {
     }
 
     handleVote(id, mood) {
-        this.props.onVote(id, mood);
+        this.props.dispatch(this.props.submitAction(id, mood));
     }
 }
+
+export default connect()(PostList);

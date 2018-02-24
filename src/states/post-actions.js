@@ -1,14 +1,14 @@
 import {
-    listPosts,
-    createPost,
-    createVote
-} from 'api/post.js';
+    listPosts as listPostsFromApi,
+    createPost as createPostFromApi,
+    createVote as createVoteFromApi,
+} from 'api/posts.js';
 
 /**
  * serchText
  */
 
-function searchText(searchText) {
+export function searchText(searchText) {
     return {
         type: '@SEARCH/SERCH_TEXT',
         searchText: searchText
@@ -43,9 +43,8 @@ export function listPosts(searchText) {
     return (dispatch, getState) => {
         dispatch(startListPosts(searchText));
 
-        return listPosts(searchText).then(list => {
+        return listPostsFromApi(searchText).then(list => {
             dispatch(endListPosts(list));
-            dispatch(searchText(''));
         }).catch(err => {
             console.error('Error listing posts', err);
 
@@ -75,9 +74,9 @@ function endCreatePost() {
 export function createPost(mood, text) {
     return (dispatch, getState) => {
         dispatch(startCreatePost(mood, text));
-
-        return createPost(mood, text).then(() => {
+        return createPostFromApi(mood, text).then(() => {
             dispatch(endCreatePost());
+            dispatch(listPosts(getState().searchText));
         }).catch(err => {
             console.error('Error creating post', err);
         });  
@@ -105,9 +104,9 @@ function endCreateVote() {
 export function createVote(id, mood) {
     return (dispatch, getState) => {
         dispatch(startCreateVote(id, mood));
-
-        return createVote(id, mood).then(() => {
+        return createVoteFromApi(id, mood).then(() => {
             dispatch(endCreateVote());
+            dispatch(listPosts(getState().searchText));
         }).catch(err => {
             console.error('Error creating Vote', err);
         });  
@@ -125,9 +124,10 @@ export function input(value) {
     };
 };
 
-export function toggleInputDanger() {
+export function setToggleInputDanger(value) {
     return {
-        type: '@POST_FORM/TOGGLE_INPUT_DANGER',
+        type: '@POST_FORM/SET_TOGGLE_INPUT_DANGER',
+        value: value
     };
 };
 
@@ -137,9 +137,16 @@ export function toggleMood() {
     };
 };
 
-export function mood(mood) {
+export function setToggleMood(value) {
     return {
-        type: '@POST_FORM/MOOD',
+        type: '@POST_FORM/SET_TOGGLE_MOOD',
+        value: value
+    };
+};
+
+export function setMood(mood) {
+    return {
+        type: '@POST_FORM/SET_MOOD',
         mood: mood
     };
 }

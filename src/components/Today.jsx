@@ -9,7 +9,7 @@ import {cancelWeather} from 'api/open-weather-map.js';
 import {getWeather} from 'states/weather-actions.js';
 import PostForm from 'components/PostForm.jsx';
 import PostList from 'components/PostList.jsx';
-import {listPosts, createPost, createVote} from 'api/posts.js';
+import {listPosts, createPost, createVote} from 'states/post-actions.js';
 
 import './Today.css';
 
@@ -23,7 +23,9 @@ class Today extends React.Component {
         unit: PropTypes.string,
         weatherLoading: PropTypes.bool,
         masking: PropTypes.bool,
-        dispatch: PropTypes.func
+        dispatch: PropTypes.func,
+        posts: PropTypes.array,
+        postLoading: PropTypes.bool
     };
 
     constructor(props) {
@@ -33,14 +35,11 @@ class Today extends React.Component {
             postLoading: false,
             posts: []
         };
-
-        this.handleCreatePost = this.handleCreatePost.bind(this);
-        this.handleCreateVote = this.handleCreateVote.bind(this);
     }
 
     componentDidMount() {
         this.props.dispatch(getWeather('Hsinchu', this.props.unit));
-        this.listPosts(this.props.searchText);
+        this.props.dispatch(listPosts(this.props.searchText));
     }
 
     componentWillUnmount() {
@@ -51,13 +50,13 @@ class Today extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.searchText !== this.props.searchText) {
-            this.listPosts(nextProps.searchText);
+            this.props.dispatch(listPosts(nextProps.searchText));
         }
     }
 
     render() {
         const {city, group, description, temp, unit, masking} = this.props;
-        const {posts, postLoading} = this.state;
+        const {posts, postLoading} = this.props;
 
         document.body.className = `weather-bg ${group}`;
         document.querySelector('.weather-bg .mask').className = `mask ${masking ? 'masking' : ''}`;
@@ -69,8 +68,8 @@ class Today extends React.Component {
                     <WeatherDisplay {...{group, description, temp, unit, masking}} day='today'/>
                 </div>
                 <div className='posts'>
-                    <PostForm onPost={this.handleCreatePost} />
-                    <PostList posts={posts} onVote={this.handleCreateVote} />{
+                    <PostForm submitAction={createPost} />
+                    <PostList posts={posts} submitAction={createVote} />{
                         postLoading &&
                         <Alert color='warning' className='loading'>Loading...</Alert>
                     }
@@ -78,47 +77,13 @@ class Today extends React.Component {
             </div>
         );
     }
-
-    listPosts(searchText) {
-        this.setState({
-            postLoading: true
-        }, () => {
-            listPosts(searchText).then(posts => {
-                this.setState({
-                    posts,
-                    postLoading: false
-                });
-            }).catch(err => {
-                console.error('Error listing posts', err);
-
-                this.setState({
-                    posts: [],
-                    postLoading: false
-                });
-            });
-        });
-    }
-
-    handleCreatePost(mood, text) {
-        createPost(mood, text).then(() => {
-            this.listPosts(this.props.searchText);
-        }).catch(err => {
-            console.error('Error creating posts', err);
-        });
-    }
-
-    handleCreateVote(id, mood) {
-        createVote(id, mood).then(() => {
-            this.listPosts(this.props.searchText);
-        }).catch(err => {
-            console.error('Error creating vote', err);
-        });
-    }
 }
 
 export default connect((state) => {
     return {
         ...state.weather,
-        unit: state.unit
+        unit: state.unit,
+        posts: state.posts.list,
+        postLoading: state.posts.postLoading
     };
 })(Today);

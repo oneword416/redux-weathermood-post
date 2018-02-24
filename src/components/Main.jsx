@@ -23,6 +23,8 @@ import {Provider} from 'react-redux';
 import Today from 'components/Today.jsx';
 import Forecast from 'components/Forecast.jsx';
 import {unit, weather, weatherForm, forecast} from 'states/weather-reducers.js';
+import {searchText, posts, postForm, tooltipOpen} from 'states/post-reducers.js';
+import {searchText as setSearchText} from 'states/post-actions.js';
 
 import './Main.css';
 
@@ -47,7 +49,11 @@ export default class Main extends React.Component {
             unit,
             weather,
             weatherForm,
-            forecast
+            forecast,
+            searchText,
+            posts,
+            postForm,
+            tooltipOpen                        
         }), composeEnhancers(applyMiddleware(thunkMiddleware/*, loggerMiddleware*/)));
     }
 
@@ -105,6 +111,7 @@ export default class Main extends React.Component {
     handleSearchKeyPress(e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13){
+            this.store.dispatch(setSearchText(e.target.value));
             this.setState({
                 searchText: e.target.value
             });
@@ -112,6 +119,7 @@ export default class Main extends React.Component {
     }
 
     handleClearSearch() {
+        this.store.dispatch(setSearchText(''));
         this.setState({
             searchText: ''
         });

@@ -1,4 +1,4 @@
-const initSearchTextState = null;
+const initSearchTextState = '';
 
 export function searchText(state = initSearchTextState, action) {
     switch (action.type) {
@@ -11,7 +11,8 @@ export function searchText(state = initSearchTextState, action) {
 
 const initPostsState = {
     list: [],
-    postLoading: false
+    postLoading: false,
+    postCreating: false,
 };
 
 export function posts(state = initPostsState, action) {
@@ -30,7 +31,15 @@ export function posts(state = initPostsState, action) {
         case '@POSTS/RESET_LIST_POSTS':
             return initPostsState;
         case '@POST/START_CREATE_POST':
+            return {
+                ...state,
+                postCreating: true
+            };
         case '@POST/END_CREATE_POST':
+            return {
+                ...state,
+                postCreating: false
+            };
         case '@VOTE/START_CREATE_VOTE':
         case '@VOTE/END_CREATE_VOTE':          
         default:
@@ -38,35 +47,42 @@ export function posts(state = initPostsState, action) {
     }
 }
 
-const initPostsFormState = {
-    inputValue: null,
+const initPostFormState = {
+    inputValue: '',
     inputDanger: false,
     moodToggle: false,
     mood: 'na'
 };
 
-export function postForm(state = initPostsFormState, action) {
+export function postForm(state = initPostFormState, action) {
     switch (action.type) {
         case '@POST_FORM/INPUT':
             return {
                 ...state,
                 inputValue: action.value
             };
-        case '@POST_FORM/TOGGLE_INPUT_DANGER':
+        case '@POST_FORM/SET_TOGGLE_INPUT_DANGER':
             return {
                 ...state,
-                inputDanger: !state.inputDanger
+                inputDanger: action.value
             };
         case '@POST_FORM/TOGGLE_MOOD':
             return {
                 ...state,
                 moodToggle: !state.moodToggle
             };
-        case '@POST_FORM/MOOD':
+        case '@POST_FORM/SET_TOGGLE_MOOD':
+            return {
+                ...state,
+                moodToggle: action.value
+            };
+        case '@POST_FORM/SET_MOOD':
             return {
                 ...state,
                 mood: action.mood
             };
+        default:
+            return state;
     }
 }
 
@@ -86,5 +102,7 @@ export function tooltipOpen(state = initVoteFormState, action) {
                 ...state,
                 tooltipOpen: action.tooltipOpen
             }
+        default:
+            return state;
     }
 }
