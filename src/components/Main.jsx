@@ -35,7 +35,6 @@ export default class Main extends React.Component {
             searchText: ''
         };
         this.store = null;
-        this.searchEl = null;
 
         this.handleNavbarToggle = this.handleNavbarToggle.bind(this);
         this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
@@ -72,7 +71,7 @@ export default class Main extends React.Component {
                                             </NavItem>
                                         </Nav>
                                         <div className='search ml-auto'>
-                                            <Input className='ml-auto' type='text' ref={this.searchEl} placeholder='Search' onKeyPress={this.handleSearchKeyPress} ref={e => this.searchEl = e}></Input>{
+                                            <Input className='ml-auto' type='text' placeholder='Search' onKeyPress={this.handleSearchKeyPress}></Input>{
                                                 this.state.searchText &&
                                                 <i className='navbar-text fa fa-times' onClick={this.handleClearSearch}></i>
                                             }
@@ -116,6 +115,5 @@ export default class Main extends React.Component {
         this.setState({
             searchText: ''
         });
-        this.searchEl.value = '';
     }
 }
